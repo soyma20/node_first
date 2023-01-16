@@ -1,4 +1,4 @@
-const {schema, model, Schema} = require('mongoose')
+const { model, Schema} = require('mongoose')
 
 const UserSchema = new Schema({
     name: {
@@ -19,7 +19,6 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true,
-
     }
 
 }, {timestamps:true})
