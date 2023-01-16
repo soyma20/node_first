@@ -1,5 +1,6 @@
 const CError = require("../error/CustomError");
 const User = require("../dataBase/User");
+const {hashPassword} = require("../services/password.service");
 
 async function getAllUsers(req, res, next) {
     try {
@@ -19,7 +20,6 @@ async function getUserById(req, res, next) {
 
         if (!user) {
             throw new CError('user with ID ' + userId + ' does not exist', 404)
-            // return;
         }
 
         res.json(user);
@@ -30,7 +30,9 @@ async function getUserById(req, res, next) {
 }
 async function createUser(req, res, next) {
     try {
-        const user = await User.create(req.body);
+
+        const hashedPassword = await hashPassword(req.body.password);
+        const user = await User.create({...req.body, password: hashedPassword});
 
         res.status(201).json(user)
     } catch (e) {
