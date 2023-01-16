@@ -1,11 +1,18 @@
 const Joi = require('joi')
 
+const {emailValidator, nameValidator, ageValidator, passwordValidator, idValidator} = require("./share");
+
 module.exports = {
     newUserValidator: Joi.object({
-        name: Joi.string().alphanum().min(2).max(20).required(),
-        email: Joi.string().required(),
-        age: Joi.number().integer().min(15).max(130),
-        password: Joi.string().required().min(5).max(25)
-    })
+        name: nameValidator.required(),
+        email: emailValidator.required(),
+        age: ageValidator,
+        password: passwordValidator.required()
+    }),
+
+    updateUserValidator: Joi.object({
+        name: nameValidator,
+        age: ageValidator,
+    }),
 
 }
