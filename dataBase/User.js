@@ -1,5 +1,7 @@
 const { model, Schema} = require('mongoose')
 
+const {USER_REF} = require('../constants/constant');
+
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -23,4 +25,4 @@ const UserSchema = new Schema({
 
 }, {timestamps:true})
 
-module.exports = model('user', UserSchema)
+module.exports = model(USER_REF, UserSchema)
