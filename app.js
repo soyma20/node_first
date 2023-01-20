@@ -1,17 +1,18 @@
 const express = require('express')
 const mongoose = require('mongoose');
 
+const userRouter = require('./routes/user.router')
+const authRouter = require('./routes/auth.router')
+
 mongoose.set('strictQuery', true);
 mongoose.connect('mongodb://127.0.0.1:27017/test');
-
-
-const userRouter = require('./routes/user.router')
 
 const app = express()
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
+app.use('/auth', authRouter)
 app.use('/users', userRouter)
 
 app.use('*', (req, res) => {
