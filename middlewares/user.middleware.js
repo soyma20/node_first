@@ -1,18 +1,17 @@
 const CError = require("../error/CustomError");
-
 const userValidator = require("../validators/user.validator")
 const User = require("../dataBase/User")
 
 module.exports = {
-    isNewUserValid:(req, res, next)=>{
+    isNewUserValid: (req, res, next) => {
         try {
             const {error, value} = userValidator.newUserValidator.validate(req.body);
 
-            if (error){
+            if (error) {
                 throw new CError(error.details[0].message, 400)
             }
             next();
-        }catch (e) {
+        } catch (e) {
             next(e)
         }
     },
@@ -20,24 +19,25 @@ module.exports = {
         try {
             const {email} = req.body;
             const userByEmail = await User.findOne({email});
-            if (userByEmail){
-                throw new CError("User with email:" +email + "already exists",409)
+            if (userByEmail) {
+                throw new CError("User with email:" + email + "already exists", 409)
             }
             next()
 
-        }catch (e) {
+        } catch (e) {
             next(e)
         }
     },
-    isUpdateUserValid: (req, res, next)=>{
+    isUpdateUserValid: (req, res, next) => {
         try {
             const {error, value} = userValidator.updateUserValidator.validate(req.body);
 
-            if (error){
+            if (error) {
                 throw new CError(error.details[0].message, 400)
             }
+            req.body = value;
             next();
-        }catch (e) {
+        } catch (e) {
             next(e)
         }
     },
@@ -45,11 +45,12 @@ module.exports = {
         try {
             const userId = req.params.userId;
             const userById = await User.findById(userId);
-            if (!userById){
+            if (!userById) {
                 throw new CError("User does not exist")
             }
+            req.user = userById;
             next()
-        }catch (e) {
+        } catch (e) {
             next(e)
         }
     }
