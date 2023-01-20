@@ -1,6 +1,6 @@
 const Joi = require('joi')
 
-const {emailValidator, nameValidator, ageValidator, passwordValidator, idValidator} = require("./share");
+const {emailValidator, nameValidator, ageValidator, passwordValidator} = require("./share");
 
 module.exports = {
     newUserValidator: Joi.object({
