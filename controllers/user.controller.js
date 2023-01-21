@@ -35,7 +35,7 @@ async function createUser(req, res, next) {
 async function deleteUserById(req, res, next) {
     try {
         const {id} = req.params;
-        await userService.deleteUser(id)
+        await userService.deleteUser({_id: id})
         res.status(204).json('User was deleted')
     } catch (e) {
         next(e);
@@ -45,7 +45,7 @@ async function deleteUserById(req, res, next) {
 async function updateUserById(req, res, next) {
     try {
         const {id} = req.params;
-        const updatedUser = await userService.updateUser(id, req.body);
+        const updatedUser = await userService.updateUser({_id: id}, req.body);
         res.status(201).json(updatedUser)
     } catch (e) {
         next(e);
