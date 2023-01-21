@@ -14,7 +14,7 @@ module.exports = {
             const userByEmail = await User.findOne({email});
 
             if (!userByEmail) {
-                throw new CError("Wrong email or password", 401)
+                return next(new CError("Wrong email or password", 401))
             }
             req.user = userByEmail;
             next()
@@ -27,7 +27,7 @@ module.exports = {
             const {error, value} = authValidator.login.validate(req.body);
 
             if (error) {
-                throw new CError('Wrong email or password', 401)
+                return next(new CError('Wrong email or password', 401));
             }
             req.body = value;
             next();
@@ -41,7 +41,7 @@ module.exports = {
 
 
             if (!access_token) {
-                throw new CError('No token', 401)
+                return next(new CError('No token', 401))
             }
 
             checkToken(access_token, ACCESS);
@@ -49,7 +49,7 @@ module.exports = {
             const tokenInfo = await OAuth.findOne({access_token});
 
             if (!tokenInfo) {
-                throw new CError('Token is not valid', 401)
+                return next(new CError('Token is not valid', 401));
             }
             req.access_token = tokenInfo.access_token;
             next()
@@ -63,7 +63,7 @@ module.exports = {
             const refresh_token = req.get(AUTHORIZATION);
 
             if (!refresh_token) {
-                throw new CError('No token', 401)
+                return next(new CError('No token', 401));
             }
 
             checkToken(refresh_token, REFRESH);
@@ -71,13 +71,12 @@ module.exports = {
             const tokenInfo = await OAuth.findOne({refresh_token});
 
             if (!tokenInfo) {
-                throw new CError('Token is not valid', 401)
+                return next(new CError('Token is not valid', 401))
             }
             req.tokenInfo = tokenInfo;
 
             next()
         } catch (e) {
-            console.log('next in auth middle')
             next(e)
         }
 
