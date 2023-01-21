@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 
 const userRouter = require('./routes/user.router')
 const authRouter = require('./routes/auth.router')
+const {MONGO_URL, PORT} = require("./constants/config");
 
 mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://127.0.0.1:27017/test');
+mongoose.connect(MONGO_URL);
 
 const app = express()
 
@@ -28,4 +29,4 @@ app.use((err, req, res, next) => {
         })
 })
 
-app.listen(5000)
+app.listen(PORT)
