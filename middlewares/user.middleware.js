@@ -1,6 +1,7 @@
 const CError = require("../error/CustomError");
 const userValidator = require("../validators/user.validator")
 const User = require("../dataBase/User")
+const userService = require("../services/user.service");
 
 module.exports = {
     isNewUserValid: (req, res, next) => {
@@ -8,7 +9,7 @@ module.exports = {
             const {error, value} = userValidator.newUserValidator.validate(req.body);
 
             if (error) {
-                throw new CError(error.details[0].message, 400)
+                return next(new CError(error.details[0].message, 400));
             }
             next();
         } catch (e) {
@@ -20,10 +21,9 @@ module.exports = {
             const {email} = req.body;
             const userByEmail = await User.findOne({email});
             if (userByEmail) {
-                throw new CError("User with email:" + email + "already exists", 409)
+                return next(new CError("User with email:" + email + "already exists", 409));
             }
             next()
-
         } catch (e) {
             next(e)
         }
@@ -33,9 +33,8 @@ module.exports = {
             const {error, value} = userValidator.updateUserValidator.validate(req.body);
 
             if (error) {
-                throw new CError(error.details[0].message, 400)
+                return next(new CError(error.details[0].message, 400));
             }
-            req.body = value;
             next();
         } catch (e) {
             next(e)
@@ -43,16 +42,15 @@ module.exports = {
     },
     isIdPresented: async (req, res, next) => {
         try {
-            const userId = req.params.userId;
-            const userById = await User.findById(userId);
-            if (!userById) {
-                throw new CError("User does not exist")
+            const {id} = req.params;
+            const user = await userService.findOneUser({_id : id})
+            if (!user) {
+               return next(new CError("User not found", 404));
             }
-            req.user = userById;
+            req.user = user;
             next()
         } catch (e) {
             next(e)
         }
     }
-
 }
