@@ -10,10 +10,10 @@ module.exports = {
     createUser : (user)=>{
         return User.create(user)
     },
-    updateUser : (id, userData, options = {new: true})=>{
-        return User.findByIdAndUpdate(id, userData, options)
+    updateUser : (params, userData, options = {new: true})=>{
+        return User.findOneAndUpdate(params, userData, options)
     },
-    deleteUser : (id)=>{
-        return User.deleteOne({_id: id});
+    deleteUser : (params)=>{
+        return User.deleteOne(params);
     },
 }
