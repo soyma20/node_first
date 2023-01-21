@@ -1,7 +1,7 @@
 const CError = require("../error/CustomError");
 const {checkToken} = require("../services/token.service");
-const OAuth = require("../dataBase/OAuth");
-const User = require("../dataBase/User");
+const userService = require("../services/user.service");
+const oauthService = require("../services/oauth.service");
 const authValidator = require("../validators/auth.validator");
 const {ACCESS, REFRESH} = require("../enums/token.type.enum");
 const {AUTHORIZATION} = require("../constants/constant");
@@ -11,7 +11,7 @@ module.exports = {
         try {
             const {email} = req.body;
 
-            const userByEmail = await User.findOne({email});
+            const userByEmail = await userService.findOneUser({email});
 
             if (!userByEmail) {
                 return next(new CError("Wrong email or password", 401))
@@ -39,14 +39,13 @@ module.exports = {
         try {
             const access_token = req.get(AUTHORIZATION);
 
-
             if (!access_token) {
                 return next(new CError('No token', 401))
             }
 
             checkToken(access_token, ACCESS);
 
-            const tokenInfo = await OAuth.findOne({access_token});
+            const tokenInfo = await oauthService.findOneOauth({access_token});
 
             if (!tokenInfo) {
                 return next(new CError('Token is not valid', 401));
@@ -68,7 +67,7 @@ module.exports = {
 
             checkToken(refresh_token, REFRESH);
 
-            const tokenInfo = await OAuth.findOne({refresh_token});
+            const tokenInfo = await oauthService.findOneOauth({refresh_token});
 
             if (!tokenInfo) {
                 return next(new CError('Token is not valid', 401))

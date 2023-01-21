@@ -1,6 +1,6 @@
 const {generateAuthTokens} = require("../services/token.service");
 const passwordService = require("../services/password.service");
-const OAuth = require("../dataBase/OAuth");
+const oauthService = require("../services/oauth.service");
 
 module.exports = {
     login: async (req, res, next) => {
@@ -11,13 +11,12 @@ module.exports = {
 
             const tokens = generateAuthTokens();
 
-            await OAuth.create({
+            await oauthService.createOauth({
                 userId: _id,
                 ...tokens
-            })
+            });
 
-            res.json({...tokens})
-
+            res.json({...tokens});
         } catch (e) {
             next(e);
         }
@@ -27,10 +26,9 @@ module.exports = {
         try {
             const {access_token} = req;
 
-            await OAuth.deleteOne({access_token});
+            await oauthService.deleteOneOauth({access_token});
 
-            res.sendStatus(204)
-
+            res.sendStatus(204);
         } catch (e) {
             next(e);
         }
@@ -39,14 +37,13 @@ module.exports = {
         try {
             const {userId, refresh_token} = req.tokenInfo;
 
-            await OAuth.deleteOne({refresh_token});
+            await oauthService.deleteOneOauth({refresh_token});
 
             const tokens = generateAuthTokens();
 
-            await OAuth.create({userId: userId, ...tokens});
+            await oauthService.createOauth({userId, ...tokens});
 
-            res.json({...tokens})
-
+            res.json({...tokens});
         } catch (e) {
             next(e);
         }
