@@ -7,6 +7,10 @@ module.exports = {
     },
     [emailAction.FORGOT_PASSWORD]: {
         subject: "Oops looks like you forgot password",
-        template: 'forgot.password'
+        template: 'forgot-password'
+    },
+    [emailAction.LOGOUT]: {
+        subject: "Logout from account",
+        template: 'logout'
     }
 }
