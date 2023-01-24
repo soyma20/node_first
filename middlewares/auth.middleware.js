@@ -11,12 +11,12 @@ module.exports = {
         try {
             const {email} = req.body;
 
-            const userByEmail = await userService.findOneUser({email});
+            const user = await userService.findOneUser({email});
 
-            if (!userByEmail) {
+            if (!user) {
                 return next(new CError("Wrong email or password", 401))
             }
-            req.user = userByEmail;
+            req.user = user;
             next()
         } catch (e) {
             next(e)
@@ -45,12 +45,13 @@ module.exports = {
 
             checkToken(access_token, ACCESS);
 
-            const tokenInfo = await oauthService.findOneOauth({access_token});
+            const tokenInfo = await oauthService.findOneOauth({access_token}).populate('userId');
 
             if (!tokenInfo) {
                 return next(new CError('Token is not valid', 401));
             }
             req.access_token = tokenInfo.access_token;
+            req.user = tokenInfo.userId;
             next()
         } catch (e) {
             next(e)
@@ -78,6 +79,18 @@ module.exports = {
         } catch (e) {
             next(e)
         }
+    },
+    isEmailValid: (req, res, next) => {
+        try {
+            const {error, value} = authValidator.forgotPassword.validate(req.body);
 
-    }
+            if (error) {
+                return next(new CError('Wrong email', 401));
+            }
+            req.body = value;
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
 }
