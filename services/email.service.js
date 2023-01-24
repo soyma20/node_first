@@ -1,16 +1,33 @@
 const nodemailer = require('nodemailer');
-const EmailTemplates = require('email-templates');
+const hbs = require('nodemailer-express-handlebars');
 const path = require('path');
 
-const {NO_REPLY_EMAIL, NO_REPLY_EMAIL_PASSWORD} = require('../constants/config');
+const {NO_REPLY_EMAIL, NO_REPLY_EMAIL_PASSWORD,FRONTEND_URL} = require('../constants/config');
 const emailTemplates = require('../email-templates');
 const CError = require("../error/CustomError");
 
 module.exports = {
     sendMail: async (userEmail = '', emailAction = '', locals = {}) => {
-        const templateParser = new EmailTemplates({
-            views: {root: path.join(process.cwd(), 'email-templates')}
+        const transporter = nodemailer.createTransport({
+            from: 'No reply',
+            auth: {
+                user: NO_REPLY_EMAIL,
+                pass: NO_REPLY_EMAIL_PASSWORD
+            },
+            service: 'gmail'
         });
+        const hbsOptions = {
+            viewEngine: {
+                extname: '.hbs',
+                defaultLayout: "main",
+                layoutsDir: path.join(process.cwd(), 'email-templates', 'layouts'),
+                partialsDir: path.join(process.cwd(), 'email-templates', 'partials'),
+            },
+            viewPath: path.join(process.cwd(), 'email-templates'),
+            extName: '.hbs',
+        }
+
+        transporter.use('compile', hbs(hbsOptions))
 
         const templateInfo = emailTemplates[emailAction]
 
@@ -18,20 +35,13 @@ module.exports = {
             throw new CError("Wrong email action", 500)
         }
 
-        const html = await templateParser.render(templateInfo.template, locals);
+        locals.frontendURL = FRONTEND_URL
 
-        const transporter = nodemailer.createTransport({
-            auth: {
-                user: NO_REPLY_EMAIL,
-                pass: NO_REPLY_EMAIL_PASSWORD
-            },
-            service: 'gmail'
-        });
         return transporter.sendMail({
-            from: 'No reply',
             to: userEmail,
             subject: templateInfo.subject,
-            html
-        })
+            template: templateInfo.template,
+            context: locals
+        });
     }
 }
