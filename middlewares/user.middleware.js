@@ -1,6 +1,5 @@
 const CError = require("../error/CustomError");
 const userValidator = require("../validators/user.validator")
-const User = require("../dataBase/User")
 const userService = require("../services/user.service");
 
 module.exports = {
@@ -19,7 +18,7 @@ module.exports = {
     isEmailRegistered: async (req, res, next) => {
         try {
             const {email} = req.body;
-            const userByEmail = await User.findOne({email});
+            const userByEmail = await userService.findOneUser({email});
             if (userByEmail) {
                 return next(new CError("User with email:" + email + "already exists", 409));
             }
