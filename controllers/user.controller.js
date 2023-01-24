@@ -1,7 +1,7 @@
-const CError = require("../error/CustomError");
-const User = require("../dataBase/User");
 const {hashPassword} = require("../services/password.service");
 const userService = require("../services/user.service");
+const emailService = require("../services/email.service");
+const emailAction = require('../enums/email.action.enum');
 
 async function getAllUsers(req, res, next) {
     try {
@@ -24,8 +24,13 @@ async function getUserById(req, res, next) {
 
 async function createUser(req, res, next) {
     try {
-        const hashedPassword = await hashPassword(req.body.password);
+        const {name, password, email} = req.body;
+        const hashedPassword = await hashPassword(password);
+
         const user = await userService.createUser({...req.body, password: hashedPassword});
+
+        await emailService.sendMail(email, emailAction.WELCOME, {name})
+
         res.status(201).json(user)
     } catch (e) {
         next(e);
