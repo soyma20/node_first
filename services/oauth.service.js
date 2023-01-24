@@ -6,6 +6,9 @@ module.exports = {
     deleteOneOauth: (params) => {
         return OAuth.deleteOne(params)
     },
+    deleteManyOauth: (params) => {
+        return OAuth.deleteMany(params)
+    },
     findOneOauth: (params) => {
         return OAuth.findOne(params)
     }
