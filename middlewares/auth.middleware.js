@@ -1,7 +1,8 @@
 const CError = require("../error/CustomError");
-const {checkToken} = require("../services/token.service");
+const {checkToken, checkActionToken} = require("../services/token.service");
 const userService = require("../services/user.service");
 const oauthService = require("../services/oauth.service");
+const actionTokenService = require("../services/actionToken.service");
 const authValidator = require("../validators/auth.validator");
 const {ACCESS, REFRESH} = require("../enums/token.type.enum");
 const {AUTHORIZATION} = require("../constants/constant");
@@ -56,7 +57,27 @@ module.exports = {
         } catch (e) {
             next(e)
         }
+    },
+    checkActionToken: (actionType) => async (req, res, next) => {
+        try {
+            const token = req.get(AUTHORIZATION);
+            if (!token) {
+                return next(new CError('No token', 401))
+            }
+            checkActionToken(token, actionType);
 
+            const tokenInfo = await actionTokenService.findOneActionToken({token}).populate('userId');
+
+            if (!tokenInfo) {
+                return next(new CError('Token is not valid', 401));
+            }
+
+            req.token = tokenInfo.token;
+            req.user = tokenInfo.userId;
+            next()
+        } catch (e) {
+            next(e)
+        }
     },
     checkRefreshToken: async (req, res, next) => {
         try {
@@ -86,6 +107,19 @@ module.exports = {
 
             if (error) {
                 return next(new CError('Wrong email', 401));
+            }
+            req.body = value;
+            next();
+        } catch (e) {
+            next(e)
+        }
+    },
+    isPasswordValid: (req, res, next) => {
+        try {
+            const {error, value} = authValidator.setForgotPassword.validate(req.body);
+
+            if (error) {
+                return next(new CError('Not valid', 400));
             }
             req.body = value;
             next();
