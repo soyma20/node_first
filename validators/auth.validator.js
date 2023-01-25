@@ -10,4 +10,7 @@ module.exports = {
     forgotPassword: Joi.object({
         email: emailValidator.required(),
     }),
+    setForgotPassword: Joi.object({
+        password: passwordValidator.required(),
+    }),
 }
