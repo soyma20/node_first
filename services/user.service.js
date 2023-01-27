@@ -8,7 +8,7 @@ module.exports = {
         return User.findOne(params);
     },
     createUser : (user)=>{
-        return User.create(user)
+        return User.createWithHashPassword(user);
     },
     updateUser : (params, userData, options = {new: true})=>{
         return User.findOneAndUpdate(params, userData, options)

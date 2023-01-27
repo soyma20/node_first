@@ -11,9 +11,10 @@ const {hashPassword} = require("../services/password.service");
 module.exports = {
     login: async (req, res, next) => {
         try {
-            const {password: hashPassword, _id} = req.user;
+            const {_id} = req.user;
             const {password} = req.body;
-            await passwordService.comparePassword(hashPassword, password);
+
+            await req.user.comparePasswords(password)
 
             const tokens = generateAuthTokens();
 

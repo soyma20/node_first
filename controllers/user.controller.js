@@ -24,10 +24,9 @@ async function getUserById(req, res, next) {
 
 async function createUser(req, res, next) {
     try {
-        const {name, password, email} = req.body;
-        const hashedPassword = await hashPassword(password);
+        const {name, email} = req.body;
 
-        const user = await userService.createUser({...req.body, password: hashedPassword});
+        const user = await userService.createUser(req.body);
 
         await emailService.sendMail(email, emailAction.WELCOME, {name})
 
