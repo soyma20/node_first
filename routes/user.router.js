@@ -3,6 +3,7 @@ const userRouter = require('express').Router();
 const userController = require("../controllers/user.controller");
 const userMiddleware = require("../middlewares/user.middleware");
 const authMiddleware = require("../middlewares/auth.middleware");
+const fileMiddleware = require("../middlewares/file.middleware");
 const commonMiddleware = require("../middlewares/common.middleware");
 
 userRouter.get('/',
@@ -15,6 +16,7 @@ userRouter.get('/:id',
 
 userRouter.post('/',
     userMiddleware.isNewUserValid,
+    fileMiddleware.checkPhoto,
     userMiddleware.isEmailRegistered,
     userController.createUser);
 
