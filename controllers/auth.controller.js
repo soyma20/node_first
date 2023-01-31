@@ -1,5 +1,4 @@
 const {generateAuthTokens, generateActionToken} = require("../services/token.service");
-const passwordService = require("../services/password.service");
 const oauthService = require("../services/oauth.service");
 const actionTokenService = require("../services/actionToken.service");
 const emailService = require("../services/email.service");
