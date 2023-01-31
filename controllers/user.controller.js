@@ -1,7 +1,9 @@
-const {hashPassword} = require("../services/password.service");
 const userService = require("../services/user.service");
 const emailService = require("../services/email.service");
 const emailAction = require('../enums/email.action.enum');
+const smsService = require("../services/sms.service");
+const {smsTemplateBuilder} = require("../common");
+const smsAction = require("../enums/sms.action.enum");
 
 async function getAllUsers(req, res, next) {
     try {
@@ -24,9 +26,13 @@ async function getUserById(req, res, next) {
 
 async function createUser(req, res, next) {
     try {
-        const {name, email} = req.body;
+        const {name, email, phone} = req.body;
 
         const user = await userService.createUser(req.body);
+
+        const sms = smsTemplateBuilder[smsAction.WELCOME]({name});
+
+        await smsService.sendSMS(phone, sms);
 
         await emailService.sendMail(email, emailAction.WELCOME, {name})
 
