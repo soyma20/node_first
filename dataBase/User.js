@@ -26,7 +26,8 @@ const UserSchema = new Schema({
     phone: {
         type: String,
         required: true
-    }
+    },
+    avatar:String
 
 }, {timestamps: true})
 
